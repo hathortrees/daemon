@@ -21,7 +21,7 @@ public class Mint {
    private String userAddress;
 
    @OneToMany(mappedBy="mint", fetch = FetchType.EAGER)
-   private Set<Tree> trees;
+   private Set<SmallTree> trees;
 
    private boolean dead;
 
@@ -34,6 +34,11 @@ public class Mint {
    private Date transactionDate;
 
    private Integer balance;
+
+   private String mail;
+
+   @ManyToOne
+   private Team team;
 
    private int count = 1;
 
@@ -69,11 +74,11 @@ public class Mint {
       this.userAddress = userAddress;
    }
 
-   public Set<Tree> getTrees() {
+   public Set<SmallTree> getTrees() {
       return trees;
    }
 
-   public void setTrees(Set<Tree> trees) {
+   public void setTrees(Set<SmallTree> trees) {
       this.trees = trees;
    }
 
@@ -131,5 +136,21 @@ public class Mint {
 
    public void setCount(int count) {
       this.count = count;
+   }
+
+   public Team getTeam() {
+      return team;
+   }
+
+   public void setTeam(Team team) {
+      this.team = team;
+   }
+
+   public String getMail() {
+      return mail;
+   }
+
+   public void setMail(String mail) {
+      this.mail = mail;
    }
 }

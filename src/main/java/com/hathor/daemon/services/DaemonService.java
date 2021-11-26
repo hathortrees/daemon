@@ -1,7 +1,7 @@
 package com.hathor.daemon.services;
 
 import com.hathor.daemon.data.entities.Mint;
-import com.hathor.daemon.data.entities.Tree;
+import com.hathor.daemon.data.entities.SmallTree;
 import com.hathor.daemon.data.entities.enums.MintState;
 import com.hathor.daemon.data.repositories.MintRepository;
 import com.hathor.daemon.data.repositories.TreeRepository;
@@ -148,7 +148,7 @@ public class DaemonService {
    private boolean initTrees(Mint mint) {
       try {
          if (mint.getTrees() == null || mint.getTrees().isEmpty()) {
-            List<Tree> trees = new ArrayList<>();
+            List<SmallTree> trees = new ArrayList<>();
             logger.info("Finding trees");
             try {
                retryTemplate.execute(context -> {
@@ -170,7 +170,7 @@ public class DaemonService {
                return false;
             }
 
-            for (Tree s : trees) {
+            for (SmallTree s : trees) {
                logger.info("Setting tree " + s.getId() + " as taken!");
                s.setTaken(true);
                s.setMint(mint);
@@ -199,7 +199,7 @@ public class DaemonService {
    private void send(Mint mint) throws Exception {
       logger.info("Sending NFT for mint " + mint.getId());
       List<String> tokens = new ArrayList<>();
-      for(Tree tree : mint.getTrees()) {
+      for(SmallTree tree : mint.getTrees()) {
          tokens.add(tree.getToken());
       }
       String transactionHash = walletService.sendTokens(mint.getUserAddress(), tokens);

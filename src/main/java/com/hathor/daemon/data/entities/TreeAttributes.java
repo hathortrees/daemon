@@ -24,7 +24,7 @@ public class TreeAttributes {
    private String accessory;
 
    @OneToOne(mappedBy = "treeAttributes")
-   private Tree tree;
+   private SmallTree tree;
 
    public Integer getId() {
       return id;
@@ -90,11 +90,11 @@ public class TreeAttributes {
       this.accessory = accessory;
    }
 
-   public Tree getTree() {
+   public SmallTree getTree() {
       return tree;
    }
 
-   public void setTree(Tree tree) {
+   public void setTree(SmallTree tree) {
       this.tree = tree;
    }
 }

@@ -1,7 +1,7 @@
 package com.hathor.daemon.services;
 
 import com.google.gson.Gson;
-import com.hathor.daemon.data.entities.Tree;
+import com.hathor.daemon.data.entities.SmallTree;
 import com.hathor.daemon.data.entities.TreeAttributes;
 import com.hathor.daemon.data.repositories.TreeAttributesRepository;
 import com.hathor.daemon.data.repositories.TreeRepository;
@@ -39,7 +39,7 @@ public class NftService {
       this.gson = new Gson();
    }
 
-   private String createNft(int i, Tree s) throws Exception {
+   private String createNft(int i, SmallTree s) throws Exception {
       InputStream inputStream = getClass().getClassLoader().getResourceAsStream("generator/metadata/" + i + ".json");
       String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
       Nft nft = gson.fromJson(text, Nft.class);
@@ -84,9 +84,9 @@ public class NftService {
                }
             }
 
-            Optional<Tree> t = treeRepository.findById(i);
+            Optional<SmallTree> t = treeRepository.findById(i);
             if (t.isPresent()) {
-               Tree tree = t.get();
+               SmallTree tree = t.get();
                String hash = createNft(i, tree);
                tree.setToken(hash);
                treeRepository.save(tree);
@@ -111,7 +111,7 @@ public class NftService {
    public void generateDatabaseNfts() {
       for(int i = 1; i <= NFT_COUNT; i++) {
          try {
-            Optional<Tree> t = treeRepository.findById(i);
+            Optional<SmallTree> t = treeRepository.findById(i);
             if(t.isPresent()) {
                logger.info("NFT " + i + " already exists");
                continue;
@@ -131,10 +131,9 @@ public class NftService {
 
             hash = "hash" + i;
 
-            Tree tree = new Tree();
+            SmallTree tree = new SmallTree();
             tree.setId(i);
             tree.setToken(hash);
-            tree.setPicture(i + ".png");
             tree.setTaken(false);
             tree.setIpfs(ipfsPublicUrl);
 
