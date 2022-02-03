@@ -56,6 +56,8 @@ public class Mint {
 
    private String message;
 
+   private Integer treesCount;
+
    @OneToMany(mappedBy="mint", fetch = FetchType.EAGER)
    private Set<SmallTree> trees;
 
@@ -225,5 +227,13 @@ public class Mint {
 
    public void setUserTransaction(String userTransaction) {
       this.userTransaction = userTransaction;
+   }
+
+   public Integer getTreesCount() {
+      return treesCount;
+   }
+
+   public void setTreesCount(Integer treesCount) {
+      this.treesCount = treesCount;
    }
 }

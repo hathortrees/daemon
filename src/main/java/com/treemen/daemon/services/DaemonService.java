@@ -178,11 +178,12 @@ public class DaemonService {
                });
                return false;
             }
-
+            int treesCount = 0;
             for (SmallTree s : trees) {
                logger.info("Setting tree " + s.getId() + " as taken!");
                s.setTaken(true);
                s.setMint(mint);
+               treesCount += s.getTreeAttributes().getTreesPlanted();
             }
 
             logger.info("Saving trees");
@@ -192,6 +193,7 @@ public class DaemonService {
             });
 
             mint.setTrees(new HashSet<>(trees));
+            mint.setTreesCount(treesCount);
             logger.info("Saving mint " + mint.getId());
             retryTemplate.execute(context -> {
                mintRepository.save(mint);
