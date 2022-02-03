@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class WalletService {
 
    private final static String SEND_ID = "send";
    private final static String RECEIVE_ID = "receive";
-   private final static String URL_RECEIVE = "http://127.0.0.1:8000/";
-   private final static String URL_SEND = "http://127.0.0.1:8001/";
+   private final static String URL_RECEIVE = "http://127.0.0.1:8010/";
+   private final static String URL_SEND = "http://127.0.0.1:8011/";
 
    private final RestTemplate restTemplate;
    private final AddressRepository addressRepository;
@@ -85,12 +86,12 @@ public class WalletService {
          String[] cmdReceive = {
                  "/bin/zsh",
                  "-c",
-                 "kill -9 $(lsof -ti:8000)"
+                 "kill -9 $(lsof -ti:8010)"
          };
          String[] cmdSend = {
                  "/bin/zsh",
                  "-c",
-                 "kill -9 $(lsof -ti:8001)"
+                 "kill -9 $(lsof -ti:8011)"
          };
 
          Process receiveProcess = rt.exec(cmdReceive);

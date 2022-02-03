@@ -19,7 +19,7 @@ public class DaemonService {
 
    Logger logger = LoggerFactory.getLogger(DaemonService.class);
 
-   private final static int PRICE = 60; // 60HTR
+   private final static int PRICE = 50; // 50HTR
    private final static int PRICE_HTR = PRICE * 100;
 
    private final MintRepository mintRepository;
