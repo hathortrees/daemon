@@ -5,6 +5,7 @@ import com.treemen.daemon.data.entities.SmallTree;
 import com.treemen.daemon.data.entities.enums.MintState;
 import com.treemen.daemon.data.repositories.MintRepository;
 import com.treemen.daemon.data.repositories.SmallTreeRepository;
+import com.treemen.daemon.services.dto.Balance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.retry.support.RetryTemplate;
@@ -99,16 +100,24 @@ public class DaemonService {
             logger.info("Processing mint " + mint.getId());
             if(mint.getState() == MintState.WAITING_FOR_DEPOSIT.ordinal()) {
                logger.info("Mint is in WAITING_FOR_DEPOSIT state");
-               Integer balance = walletService.checkBalance(mint.getDepositAddress().getAddress());
-               logger.info("Balance is " + balance + " and it should be " + (PRICE_HTR * mint.getCount()));
-               if(balance != null && balance > 0) {
-                  mint.setBalance(balance);
+               Balance balance = walletService.checkBalance(mint.getDepositAddress().getAddress());
+               int totalBalance = balance == null ? 0 : balance.getTotal_amount_available();
+               logger.info("Balance is " + totalBalance + " and it should be " + (PRICE_HTR * mint.getCount()));
+               if(totalBalance > 0) {
+                  mint.setBalance(totalBalance);
+                  if(balance.getUtxos() != null && balance.getUtxos().size() > 0){
+                     String tx = balance.getUtxos().get(0).getTx_id();
+                     logger.info("Setting user transaction " + tx + " to mint " + mint.getId());
+                     mint.setUserTransaction(balance.getUtxos().get(0).getTx_id());
+                  } else {
+                     logger.warn("Unable to set user transaction for mint " + mint.getId());
+                  }
                   retryTemplate.execute(context -> {
                      mintRepository.save(mint);
                      return null;
                   });
                }
-               if (balance != null && balance >= PRICE_HTR * mint.getCount()) {
+               if (totalBalance >= PRICE_HTR * mint.getCount()) {
                   logger.info("Balance is good, initializing trees");
                   if(initTrees(mint)) {
                      logger.info("Setting mint " + mint.getId() + " state to SENDING_NFT");
@@ -120,7 +129,7 @@ public class DaemonService {
                      send(mint);
                   }
                }
-               if (balance != null && balance == 0) {
+               if (totalBalance == 0) {
                   Date created = mint.getCreatedAt();
                   Date now = new Date();
 

@@ -30,6 +30,8 @@ public class Mint {
 
    private String userAddress;
 
+   private String userTransaction;
+
    @ManyToOne
    @JoinColumn(name = "deposit_address_id", referencedColumnName = "id")
    private Address depositAddress;
@@ -215,5 +217,13 @@ public class Mint {
 
    public void setTeam(Team team) {
       this.team = team;
+   }
+
+   public String getUserTransaction() {
+      return userTransaction;
+   }
+
+   public void setUserTransaction(String userTransaction) {
+      this.userTransaction = userTransaction;
    }
 }

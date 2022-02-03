@@ -230,7 +230,7 @@ public class WalletService {
       return null;
    }
 
-   public Integer checkBalance(String address) {
+   public Balance checkBalance(String address) {
       MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
       headers.add("X-Wallet-Id", RECEIVE_ID);
 
@@ -239,7 +239,7 @@ public class WalletService {
                  Balance.class);
 
          if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            return response.getBody().getTotal_amount_available();
+            return response.getBody();
          }
       } catch (Exception ex) {
          logger.error("Unable to get balance for address " + address, ex);
