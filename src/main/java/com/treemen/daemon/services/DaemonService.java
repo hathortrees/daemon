@@ -2,9 +2,11 @@ package com.treemen.daemon.services;
 
 import com.treemen.daemon.data.entities.Mint;
 import com.treemen.daemon.data.entities.SmallTree;
+import com.treemen.daemon.data.entities.Team;
 import com.treemen.daemon.data.entities.enums.MintState;
 import com.treemen.daemon.data.repositories.MintRepository;
 import com.treemen.daemon.data.repositories.SmallTreeRepository;
+import com.treemen.daemon.data.repositories.TeamRepository;
 import com.treemen.daemon.services.dto.Balance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +24,23 @@ public class DaemonService {
 
    private final static int PRICE = 50; // 50HTR
    private final static int PRICE_HTR = PRICE * 100;
+   private final static int NO_TEAM_ID = 5;
 
    private final MintRepository mintRepository;
    private final WalletService walletService;
    private final SmallTreeRepository smallTreeRepository;
    private final RetryTemplate retryTemplate;
+   private final TeamRepository teamRepository;
 
    public DaemonService(MintRepository mintRepository,
                         WalletService walletService,
                         SmallTreeRepository smallTreeRepository,
-                        RetryTemplate retryTemplate){
+                        RetryTemplate retryTemplate, TeamRepository teamRepository){
       this.mintRepository = mintRepository;
       this.walletService = walletService;
       this.smallTreeRepository = smallTreeRepository;
       this.retryTemplate = retryTemplate;
+      this.teamRepository = teamRepository;
    }
 
    //@Scheduled(fixedDelay = 10000)
@@ -197,6 +202,17 @@ public class DaemonService {
             logger.info("Saving mint " + mint.getId());
             retryTemplate.execute(context -> {
                mintRepository.save(mint);
+               return null;
+            });
+            Team team = mint.getTeam();
+            if(team == null) {
+               team = teamRepository.findById(NO_TEAM_ID).get();
+            }
+            final Team fTeam = team;
+            logger.info("Setting trees count to team " + fTeam + " to " + (mint.getTreesCount() + treesCount));
+            fTeam.setTreesCount(mint.getTreesCount() + treesCount);
+            retryTemplate.execute(context -> {
+               teamRepository.save(fTeam);
                return null;
             });
          }
