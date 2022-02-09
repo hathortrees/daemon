@@ -76,8 +76,8 @@ public class MailService {
          }
       });
 
-      //Mint mint = mintRepository.findById("efe27c01-ce47-4138-9b04-daad34eaeb21").get();
-      //sendMail(mint);
+      Mint mint = mintRepository.findById("efe27c01-ce47-4138-9b04-daad34eaeb21").get();
+      sendMail(mint);
    }
 
    public void sendMail(Mint mint) {
@@ -137,6 +137,13 @@ public class MailService {
             nftAttr = nftAttr.replace(RARITY, rarity.toString());
             attributes += nftAttr;
          }
+
+         String nftAttr = attribute.replace(NAME, "Trees planted");
+         nftAttr = nftAttr.replace(VALUE, "");
+         nftAttr = nftAttr.replace(RARITY, tree.getTreeAttributes().getTreesPlanted() + "");
+         nftAttr = nftAttr.replace(" %", "");
+         attributes += nftAttr;
+
          nftTile = nftTile.replace(ATTRIBUTES, attributes);
          tiles += nftTile;
       }
