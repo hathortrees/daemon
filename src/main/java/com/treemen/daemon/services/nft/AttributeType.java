@@ -5,7 +5,7 @@ public enum AttributeType {
    TREE("Tree"),
    BACKGROUND("Background"),
    EYES("Eyes"),
-   SKIN("Skin"),
+   BODY("Body"),
    MOUTH("Mouth"),
    CLOTHES("Clothes"),
    ACCESSORY("Accessory");

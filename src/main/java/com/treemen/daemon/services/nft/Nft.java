@@ -7,6 +7,7 @@ public class Nft {
    private String name;
    private String description;
    private String file;
+   private Integer overall_rarity;
    private List<Attribute> attributes;
 
    public String getAttributeValue(AttributeType type) {
@@ -48,5 +49,13 @@ public class Nft {
 
    public void setAttributes(List<Attribute> attributes) {
       this.attributes = attributes;
+   }
+
+   public Integer getOverall_rarity() {
+      return overall_rarity;
+   }
+
+   public void setOverall_rarity(Integer overall_rarity) {
+      this.overall_rarity = overall_rarity;
    }
 }

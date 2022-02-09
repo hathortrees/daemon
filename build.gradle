@@ -26,6 +26,8 @@ dependencies {
 
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-rekognition', version: '1.12.115'
 	implementation group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
+
+	implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 }
 
 test {

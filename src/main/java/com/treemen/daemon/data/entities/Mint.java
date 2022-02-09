@@ -44,12 +44,6 @@ public class Mint {
 
    private String name;
 
-   private String giftEmail;
-
-   private String giftName;
-
-   private boolean gift;
-
    private Date createdAt;
 
    private Date updatedAt;
@@ -123,30 +117,6 @@ public class Mint {
 
    public void setName(String name) {
       this.name = name;
-   }
-
-   public String getGiftEmail() {
-      return giftEmail;
-   }
-
-   public void setGiftEmail(String giftEmail) {
-      this.giftEmail = giftEmail;
-   }
-
-   public String getGiftName() {
-      return giftName;
-   }
-
-   public void setGiftName(String giftName) {
-      this.giftName = giftName;
-   }
-
-   public boolean isGift() {
-      return gift;
-   }
-
-   public void setGift(boolean gift) {
-      this.gift = gift;
    }
 
    public Date getCreatedAt() {

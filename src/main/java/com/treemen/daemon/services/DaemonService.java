@@ -31,16 +31,18 @@ public class DaemonService {
    private final SmallTreeRepository smallTreeRepository;
    private final RetryTemplate retryTemplate;
    private final TeamRepository teamRepository;
+   private final MailService mailService;
 
    public DaemonService(MintRepository mintRepository,
                         WalletService walletService,
                         SmallTreeRepository smallTreeRepository,
-                        RetryTemplate retryTemplate, TeamRepository teamRepository){
+                        RetryTemplate retryTemplate, TeamRepository teamRepository, MailService mailService){
       this.mintRepository = mintRepository;
       this.walletService = walletService;
       this.smallTreeRepository = smallTreeRepository;
       this.retryTemplate = retryTemplate;
       this.teamRepository = teamRepository;
+      this.mailService = mailService;
    }
 
    //@Scheduled(fixedDelay = 10000)
@@ -243,6 +245,10 @@ public class DaemonService {
             });
          } catch (Exception ex) {
             logger.error("FATAL! Could not save mint " + mint.getId() + " to state NFT_SENT when TREES were sent!", ex);
+         }
+
+         if (mint.getEmail() != null) {
+            mailService.sendMail(mint);
          }
       }
    }

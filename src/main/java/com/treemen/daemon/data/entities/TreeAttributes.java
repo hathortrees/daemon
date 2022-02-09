@@ -20,7 +20,7 @@ public class TreeAttributes {
 
    private String tree;
 
-   private String skin;
+   private String body;
 
    private String clothes;
 
@@ -74,12 +74,12 @@ public class TreeAttributes {
       this.tree = tree;
    }
 
-   public String getSkin() {
-      return skin;
+   public String getBody() {
+      return body;
    }
 
-   public void setSkin(String skin) {
-      this.skin = skin;
+   public void setBody(String body) {
+      this.body = body;
    }
 
    public String getClothes() {
