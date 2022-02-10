@@ -76,8 +76,8 @@ public class MailService {
          }
       });
 
-      Mint mint = mintRepository.findById("efe27c01-ce47-4138-9b04-daad34eaeb21").get();
-      sendMail(mint);
+//      Mint mint = mintRepository.findById("efe27c01-ce47-4138-9b04-daad34eaeb21").get();
+//      sendMail(mint);
    }
 
    public void sendMail(Mint mint) {
@@ -122,7 +122,7 @@ public class MailService {
       String tiles = "";
       for(SmallTree tree : mint.getTrees()) {
          String nftTile = tile.replace(NAME, "TreeMen no. " + tree.getId());
-         String imgUrl = tree.getIpfs(); //TODO "https://tree-men.com/nfts/" + tree.getId() + ".png";
+         String imgUrl = "https://tree-men.com/storage/app/media/nfts/" + tree.getId() + ".png";
          nftTile = nftTile.replace(IMAGE_SRC, imgUrl);
          nftTile = nftTile.replace(TOKEN, tree.getToken());
 

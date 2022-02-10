@@ -202,7 +202,10 @@ public class WalletService {
       if (addresses != null) {
          if (addresses != null && addresses.getAddresses() != null) {
             //addressRepository.deleteAll();
+            int i = 1;
             for (String address : addresses.getAddresses()) {
+               logger.info("Inserting address " + i);
+               i++;
                Address ad = new Address();
                ad.setAddress(address);
                addressRepository.save(ad);

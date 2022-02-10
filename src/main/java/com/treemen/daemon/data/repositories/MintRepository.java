@@ -9,4 +9,5 @@ public interface MintRepository extends CrudRepository<Mint, String> {
 
    List<Mint> getAllByState(int state);
 
+   List<Mint> getAllByStateAndDead(int state, boolean dead);
 }

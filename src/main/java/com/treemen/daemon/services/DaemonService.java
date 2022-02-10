@@ -11,6 +11,7 @@ import com.treemen.daemon.services.dto.Balance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -45,7 +46,7 @@ public class DaemonService {
       this.mailService = mailService;
    }
 
-   //@Scheduled(fixedDelay = 10000)
+   @Scheduled(fixedDelay = 10000)
    public void checkAddresses() {
       logger.info("Loop started");
 
@@ -53,11 +54,11 @@ public class DaemonService {
       final List<Mint> mints = new ArrayList<>();
       try {
          retryTemplate.execute(context -> {
-            mints.addAll(this.mintRepository.getAllByState(MintState.WAITING_FOR_DEPOSIT.ordinal()));
+            mints.addAll(this.mintRepository.getAllByStateAndDead(MintState.WAITING_FOR_DEPOSIT.ordinal(), false));
             return null;
          });
          retryTemplate.execute(context -> {
-            mints.addAll(this.mintRepository.getAllByState(MintState.SENDING_NFT.ordinal()));
+            mints.addAll(this.mintRepository.getAllByStateAndDead(MintState.SENDING_NFT.ordinal(), false));
             return null;
          });
       } catch (Exception ex) {
@@ -142,7 +143,7 @@ public class DaemonService {
 
                   long diff = now.getTime() - created.getTime();
                   long hours = TimeUnit.MILLISECONDS.toHours(diff);
-                  if(hours >= 3) {
+                  if(hours >= 2) {
                      logger.info("Setting mint " + mint.getId() + " as dead");
                      mint.setDead(true);
                      mintRepository.save(mint);
@@ -231,7 +232,7 @@ public class DaemonService {
       for(SmallTree tree : mint.getTrees()) {
          tokens.add(tree.getToken());
       }
-      String transactionHash = walletService.sendTokens(mint.getUserAddress(), tokens);
+      String transactionHash = walletService.sendTokens(mint.getUserAddress().trim(), tokens);
       if(transactionHash != null) {
          logger.info("Transaction hash " + transactionHash);
          mint.setTransaction(transactionHash);
