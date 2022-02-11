@@ -12,4 +12,6 @@ public interface SmallTreeRepository extends CrudRepository<SmallTree, Integer> 
    @Query(nativeQuery = true, value = "SELECT * FROM mai_tree_small_trees t WHERE t.taken = 0 order by RAND() LIMIT :count")
    List<SmallTree> findNotTaken(@Param("count") int count);
 
+   List<SmallTree> findByMintIsNullAndTakenIsTrue();
+
 }

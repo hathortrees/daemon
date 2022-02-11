@@ -212,8 +212,8 @@ public class DaemonService {
                team = teamRepository.findById(NO_TEAM_ID).get();
             }
             final Team fTeam = team;
-            logger.info("Setting trees count to team " + fTeam + " to " + (mint.getTreesCount() + treesCount));
-            fTeam.setTreesCount(mint.getTreesCount() + treesCount);
+            logger.info("Setting trees count to team " + fTeam.getName() + " to " + (fTeam.getTreesCount() + treesCount));
+            fTeam.setTreesCount(fTeam.getTreesCount() + treesCount);
             retryTemplate.execute(context -> {
                teamRepository.save(fTeam);
                return null;
