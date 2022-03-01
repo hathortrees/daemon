@@ -14,4 +14,5 @@ public interface SmallTreeRepository extends CrudRepository<SmallTree, Integer> 
 
    List<SmallTree> findByMintIsNullAndTakenIsTrue();
 
+   List<SmallTree> findByTakenIsTrue();
 }
