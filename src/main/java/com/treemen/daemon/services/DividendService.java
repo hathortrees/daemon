@@ -1,7 +1,11 @@
 package com.treemen.daemon.services;
 
+import com.treemen.daemon.data.entities.Airdrop;
 import com.treemen.daemon.data.entities.SmallTree;
+import com.treemen.daemon.data.entities.TreeAirdrop;
+import com.treemen.daemon.data.repositories.AirdropRepository;
 import com.treemen.daemon.data.repositories.SmallTreeRepository;
+import com.treemen.daemon.data.repositories.TreeAirdropRepository;
 import com.treemen.daemon.services.dto.TokenHistory;
 import com.treemen.daemon.services.dto.TokenTransaction;
 import com.treemen.daemon.services.dto.TransactionData;
@@ -22,16 +26,25 @@ public class DividendService {
    private final WalletService walletService;
    private final SmallTreeRepository smallTreeRepository;
    private final FullNodeService fullNodeService;
+   private final AirdropRepository airdropRepository;
+   private final TreeAirdropRepository treeAirdropRepository;
 
-   public DividendService(WalletService walletService, SmallTreeRepository smallTreeRepository, FullNodeService fullNodeService) {
+   public DividendService(WalletService walletService, SmallTreeRepository smallTreeRepository, FullNodeService fullNodeService, AirdropRepository airdropRepository, TreeAirdropRepository treeAirdropRepository) {
       this.walletService = walletService;
       this.smallTreeRepository = smallTreeRepository;
       this.fullNodeService = fullNodeService;
+      this.airdropRepository = airdropRepository;
+      this.treeAirdropRepository = treeAirdropRepository;
    }
 
-   @PostConstruct
+   //@PostConstruct
    public void run() {
-      BigDecimal htrAmount = new BigDecimal("463");
+      BigDecimal htrAmount = new BigDecimal("50000");
+
+      Airdrop airdrop = new Airdrop();
+      airdrop.setDate(new Date());
+      airdrop.setTotalHtr(htrAmount.longValue());
+      airdropRepository.save(airdrop);
 
       List<SmallTree> trees = smallTreeRepository.findByTakenIsTrue();
       Map<String, List<SmallTree>> treeMap = new HashMap<>();
@@ -53,20 +66,49 @@ public class DividendService {
          }
       }
 
-
       Map<String, BigDecimal> htrMap = new HashMap<>();
+
+      Map<String, List<TreeAirdrop>> airdropMap = new HashMap<>();
+
       for(String address : treeMap.keySet()) {
          List<SmallTree> treeList = treeMap.get(address);
          BigDecimal addressRarity = BigDecimal.ZERO;
          for(SmallTree tree : treeList) {
-            addressRarity = addressRarity.add(new BigDecimal(tree.getTreeAttributes().getTreesPlanted()));
+            BigDecimal treeRarity = new BigDecimal(tree.getTreeAttributes().getTreesPlanted());
+            addressRarity = addressRarity.add(treeRarity);
+
+            BigDecimal treeHtr = treeRarity.divide(totalRarity, 8, RoundingMode.HALF_UP).multiply(htrAmount);
+
+            TreeAirdrop treeAirdrop = new TreeAirdrop();
+            treeAirdrop.setAirdrop(airdrop);
+            treeAirdrop.setAddress(address);
+            treeAirdrop.setSmallTree(tree);
+            treeAirdrop.setHtrAmount(treeHtr.longValue());
+            treeAirdropRepository.save(treeAirdrop);
+            if(!airdropMap.containsKey(address)) {
+               List<TreeAirdrop> treeAirdrops = new ArrayList<>();
+               treeAirdrops.add(treeAirdrop);
+               airdropMap.put(address, treeAirdrops);
+            } else {
+               airdropMap.get(address).add(treeAirdrop);
+            }
          }
 
          BigDecimal htrToSend = addressRarity.divide(totalRarity, 8, RoundingMode.HALF_UP).multiply(htrAmount);
-         htrMap.put(address, htrToSend.setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).setScale(0));
+         htrMap.put(address, htrToSend.setScale(0, RoundingMode.HALF_UP));
       }
 
-      logger.info(htrMap.toString());
+      for(String address : htrMap.keySet()) {
+         String hash = null;
+         while(hash == null) {
+            hash = UUID.randomUUID().toString(); //walletService.sendHtr(address, htrMap.get(address).intValue());
+         }
+         List<TreeAirdrop> treeAirdrops = airdropMap.get(address);
+         for(TreeAirdrop treeAirdrop : treeAirdrops) {
+            treeAirdrop.setTransaction(hash);
+         }
+         treeAirdropRepository.saveAll(treeAirdrops);
+      }
    }
 
    private String getAddressOfToken(SmallTree tree) {
